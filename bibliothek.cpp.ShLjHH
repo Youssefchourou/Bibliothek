@@ -1,0 +1,639 @@
+#include "bibliothek.h"
+#include<iostream>
+#include<algorithm>
+#include<vector>
+#include<string>
+#include<random>
+#include<iomanip>
+#include<utility>
+#include<cstdlib>
+#include<fstream>
+#include<sstream>
+#include<ctime>
+#include<memory>
+#include"buch.h"
+#include"medien.h"
+#include"buecher.h"
+#include"cds.h"
+
+
+
+using namespace std;
+Bibliothek::Bibliothek()
+{
+
+}
+
+Bibliothek::~Bibliothek()
+{
+    for(auto it:mlisteb){
+        delete it;
+    }
+    for(auto it:mlistec){
+        delete it;
+    }
+
+}
+bool Bibliothek::Namevergleich(const Medien *a, const Medien *b)
+{
+    return a->getAutor()< b->getAutor();
+
+}
+void Bibliothek::benutzerDialog()
+{
+    while(true){
+
+        cout<<"Wählen Sie bitte ein Nummer aus"<<endl;
+        cout<<"1: Medium anlegen"<<endl;
+        cout<<"2: Medium löschen"<<endl;
+        cout<<"3: Bestand anzeigen"<<endl;
+        cout<<"4: Medium nach Autor"<<endl;
+        cout<<"5: Medium empfehlen "<<endl;
+        cout<<"6: Bibliothek speichern"<<endl;
+        cout<<"7: Bibliothek laden "<<endl;
+        cout<<"8: Medium ausleihen"<<endl;
+        cout<<"9: Medium zurückgeben"<<endl;
+        cout<<"10: Medien Benutzerdialog"<<endl;
+        cout<<"0: Programm beenden"<<endl;
+        char choice;
+        cin>>choice;
+        switch(choice){
+
+
+        case('1'):{
+
+
+            Buchanlegen();
+
+            break;
+        }
+        case('2'):{
+            cout<<"Buch löschen"<<endl;
+            Buchlöschen();
+
+
+
+            break;
+
+        }
+        case('3'):{
+            cout<<"bestand Anzeigen"<<endl;
+            bestandanzeigen();
+
+            break;
+        }
+        case('4'):{
+            buch_Autor();
+            break;
+
+
+
+
+
+        }
+        case('5'):{
+            char choice;
+            cout<<"Wollen Sie einen Autor wählen(j/n) "<<endl;
+            cin>>choice;
+            switch(choice){
+                case('j'):{
+                Buchempfehlen();
+                break;
+                }
+                case('n'):{
+                BuchempfehlenOA();
+                break;
+
+                }
+            }
+
+        }
+        case('6'):{
+            Bibliothekspeichern();
+
+            break;
+        }
+        case('7'):{
+            Bibliothekladen();
+
+            break;
+
+        }
+        case('8'):{
+            Buchausleihen();
+            break;
+        }
+        case('9'): {
+            Buchzurückgeben();
+            break;
+        }
+
+        case('0'):{
+            cout<<"Sie wollen das Programm  verlassen"<<endl;
+            return;
+        }
+
+
+        }
+    }
+
+
+
+}
+
+void Bibliothek::Buchanlegen()
+{
+    cout<<"Medium anlegen"<<endl;
+    cout<<"Sie wollen ein 1:Buch oder ein 2:Cd anlegen"<<endl;
+    char choice;
+    cin>>choice;
+    switch(choice){
+        case('1'):{
+            cout<<"Sie haben ein Buch ausgewählt"<<endl;
+            cout<<"Geben Sie bitte den Titel ein"<<endl;
+            string Titel,nameautor;
+            cin>>Titel;
+            cout<<"Geben Sie bitte die Name des Autors"<<endl;
+            cin>>nameautor;
+            cout<<"Geben Sie bitte die Zeilen"<<endl;
+            int Zeilen;
+            cin>>Zeilen;
+            Medien*buecher=new Buecher(Titel,nameautor,Zeilen);
+            mlisteb.push_back(buecher);
+            cout<<"Buch wurde angelegt "<<endl;
+            break;
+
+        }
+        case('2'):{
+            cout<<"Sie haben ein Cd ausgewählt"<<endl;
+            cout<<"Geben Sie bitte den Titel ein"<<endl;
+            string Titel,Autor;
+            float Spieldauer;
+            cin>>Titel;
+            cout<<"Geben Sie bitte die Name des Autors "<<endl;
+            cin>>Autor;
+            cout<<"Geben Sie bitte das Spieldauer"<<endl;
+            cin>>Spieldauer;
+            Medien*cd=new CDs(Titel,Autor,Spieldauer);
+            mlistec.push_back(cd);
+            cout<<"Cd wurde angelgt"<<endl;
+
+            break;
+        }
+    }
+
+}
+
+void Bibliothek::bestandanzeigen()
+{
+    cout<<"1:Buch  2: Cd"<<endl;
+    char choice;
+    cin>>choice;
+    switch(choice){
+    case('1'):{
+            for (auto it : mlisteb){
+            if(it->getAktiv()==true){
+                cout<<setw(10)<<right<<"Nummer: "<<it->getId()<<"|";
+                cout<<setw(20)<<right<<"Name: "<<it->getAutor()<<"|";
+                cout<<setw(20)<<right<<"Titel: "<<it->getTitel()<<"|";
+
+                if(it->getAusgeliehen()==false){
+                    cout<<setw(20)<<right<<"Buchzustand: verüfgbar "<<endl;
+                }
+                else{
+                    cout<<setw(20)<<right<<"Buchzustand: asugeliehen "<<endl;
+
+
+                }
+
+            }
+            break;
+
+
+            }
+    case('2'):{
+            for (auto it : mlistec){
+            if(it->getAktiv()==true){
+                cout<<setw(10)<<right<<"Nummer: "<<it->getId()<<"|";
+                cout<<setw(20)<<right<<"Name: "<<it->getAutor()<<"|";
+                cout<<setw(20)<<right<<"Titel: "<<it->getTitel()<<"|";
+
+                if(it->getAusgeliehen()==false){
+                    cout<<setw(20)<<right<<"Cdzustand: verüfgbar "<<endl;
+                }
+                else{
+                    cout<<setw(20)<<right<<"Cdzustand: asugeliehen "<<endl;
+
+
+                }
+
+            }
+            break;
+
+
+            }
+
+
+
+    }
+    }
+    }
+}
+
+void Bibliothek::buch_Autor()
+{
+    cout<<"1:Buch 2:Cd"<<endl;
+    char choice;
+    cin>>choice;
+    switch(choice){
+    case('1'):{
+            sort(mlisteb.begin(),mlisteb.end(),Namevergleich);
+            cout<<"Sortiert nach Name"<<endl;
+            for(const auto& buch:mlisteb){
+            if(buch->getAktiv()==true){
+                cout<<setw(10)<<right<<"Name des Autors: "<<buch->getAutor()<<"|";
+                cout<<setw(10)<<left<<" Titel des Buchs: "<<buch->getTitel()<<"|";
+                cout<<setw(10)<<left <<" Nummer: "<<buch->getId()<<endl;
+            }
+            break;
+
+
+            }
+    case('2'):{
+            sort(mlistec.begin(),mlistec.end(),Namevergleich);
+            cout<<"Sortiert nach Name"<<endl;
+            for(const auto& cd:mlistec){
+            if(cd->getAktiv()==true){
+                cout<<setw(10)<<right<<"Name des Autors: "<<cd->getAutor()<<"|";
+                cout<<setw(10)<<left<<" Titel des Buchs: "<<cd->getTitel()<<"|";
+                cout<<setw(10)<<left <<" Nummer: "<<cd->getId()<<endl;
+            }
+            break;
+
+
+
+            }
+    }
+
+
+    }
+    }
+}
+
+void Bibliothek::Buchlöschen()
+{
+    cout<<"1:Buch 2: Cd"<<endl;
+    char choice;
+    cin>>choice;
+    switch(choice){
+    case('1'):{
+            int number;
+            cout<<"Geben Sie bitte die genaue Nummer des Mediens"<<endl;
+            cin>>number;
+            bool found =false;
+            for(auto it:mlisteb){
+            if(it->getId()==number){
+                found=true;
+                if(it->getAusgeliehen()==false){
+                    cout<<"Sie können denn ein Buch löschen"<<endl;
+                        if(it->getAktiv()==true){
+                        cout<<"Das Buch ist Aktiv. Sie Können es gerade löschen"<<endl;
+                        it->setAktiv(false);
+                        cout<<"Das Buch wurde erfolgreich gelöscht"<<endl;
+
+                    }
+                    else if(it->getAktiv()==false) {
+                        cout<<"Das Buch ist schon gelöscht"<<endl;
+                    }
+                }
+                else if(it->getAusgeliehen()==true){
+                    cout<<"Buch ausgeliehen "<<endl;
+                    break;
+                }
+            }
+
+
+            }
+            if(!found){
+            cout<<"Wir können diese Nummer nicht finden"<<endl;
+            }
+            break;
+
+    }
+    case('2'):{
+            int number;
+            cout<<"Geben Sie bitte die genaue Nummer des Mediens"<<endl;
+            cin>>number;
+            bool found =false;
+            for(auto it:mlistec){
+            if(it->getId()==number){
+                found=true;
+                if(it->getAusgeliehen()==false){
+                    cout<<"Sie können denn ein Cd löschen"<<endl;
+                        if(it->getAktiv()==true){
+                        cout<<"Das Cd ist Aktiv. Sie Können es gerade löschen"<<endl;
+                         it->setAktiv(false);
+                        cout<<"Das Cd wurde erfolgreich gelöscht"<<endl;
+
+                    }
+                    else if(it->getAktiv()==false) {
+                        cout<<"Das Cd ist schon gelöscht"<<endl;
+                    }
+                }
+                else if(it->getAusgeliehen()==true){
+                    cout<<"Cd ausgeliehen "<<endl;
+                    break;
+                }
+            }
+
+
+            }
+            if(!found){
+            cout<<"Wir können diese Nummer nicht finden"<<endl;
+            }
+            break;
+
+
+    }
+    }
+
+
+
+
+
+}
+
+void Bibliothek::Bibliothekspeichern()
+{
+    cout<<"1:Buch 2:Cd"<<endl;
+    char choice;
+    switch(choice){
+    case('1'):{
+        ofstream datei("Bibliothek.txt");
+        if(!datei){
+        cerr<<"Fehler beim öffnen der Datei"<<endl;
+            return;
+        }
+        for(auto it: mlisteb){
+            datei<<it->getId()<<",";
+            datei<<it->getAutor()<<",";
+            datei<<it->getTitel()<<endl;
+
+        }
+            datei.close();
+            cout<<"Datei wurde erfolgreich gespeichert "<<endl;
+            break;
+
+
+    }
+    case('2'):{
+            ofstream datei("Bibliothek.txt");
+            if(!datei){
+            cerr<<"Fehler beim öffnen der Datei"<<endl;
+                return;
+            }
+            for(auto it: mlistec){
+            datei<<it->getId()<<",";
+            datei<<it->getAutor()<<",";
+            datei<<it->getTitel()<<endl;
+
+            }
+            datei.close();
+            cout<<"Datei wurde erfolgreich gespeichert "<<endl;
+            break;
+
+
+    }
+    }
+
+
+}
+
+void Bibliothek::Bibliothekladen()
+{
+    cout<<"1:Buch 2:Cd"<<endl;
+    char choice;
+    switch(choice){
+    case('1'):{
+
+            ifstream datei("Bibliothek.txt");
+            if(!datei){
+            cerr<<"Fehler beim öffnen der Datei"<<endl;
+                return;
+            }
+            mlisteb.clear();
+            string line;
+            while(getline(datei,line)){
+            stringstream ss(line);
+            string nummerstr,name,Titel;
+            getline(ss,nummerstr,',');
+            getline(ss,name,',');
+            getline(ss,Titel);
+            int number=stoi(nummerstr);
+            Medien*buch=new Buecher(name,Titel,0);
+            mlisteb.push_back(buch);
+
+
+
+            }
+            datei.close();
+            cout<<"Bibliothek wurde erfolgreich geladen "<<endl;
+            break;
+
+    }
+    case('2'):{
+
+            ifstream datei("Bibliothek.txt");
+            if(!datei){
+            cerr<<"Fehler beim öffnen der Datei"<<endl;
+                return;
+            }
+            mlistec.clear();
+            string line;
+            while(getline(datei,line)){
+            stringstream ss(line);
+            string nummerstr,name,Titel;
+            getline(ss,nummerstr,',');
+            getline(ss,name,',');
+            getline(ss,Titel);
+            int number=stoi(nummerstr);
+            Medien*cd=new CDs(name,Titel,0.0);
+            mliste.push_back(cd);
+
+
+
+            }
+            datei.close();
+            cout<<"Bibliothek wurde erfolgreich geladen "<<endl;
+            break;
+
+    }
+    }
+
+
+
+}
+
+void Bibliothek::Buchausleihen()
+{
+    cout<<"1:Buch 2:Cd"<<endl;
+    char choice;
+    cin>>choice;
+    switch(choice){
+    case('1'):{
+        cout<<"Sie wollen ein Buch ausleihen"<<endl;
+        cout<<"Geben Sie bitte die Name des Buchs"<<endl;
+        string name,nachname;
+        cin>>name;
+        cout<<"Geben Sie bitte ihre Name"<<endl;
+        cin>>nachname;
+        Ausleiherbname.push_back(nachname);
+        for(auto it:mlisteb){
+            if(it->getTitel()==name){
+                it->setAusgeliehen(true);
+                cout<<"Buch wurde ausgeliehen"<<endl;
+            }
+        }
+        break;
+
+    }
+    case('2'):{
+        cout<<"Sie wollen ein Cd ausleihen"<<endl;
+        cout<<"Geben Sie bitte die Name des Cds"<<endl;
+        string name,nachname;
+        cin>>name;
+        cout<<"Geben Sie bitte ihre Name"<<endl;
+        cin>>nachname;
+        Ausleihercname.push_back(nachname);
+        for(auto it:mlistec){
+            if(it->getTitel()==name){
+                it->setAusgeliehen(true);
+                cout<<"Cd wurde ausgeliehen"<<endl;
+            }
+        }
+        break;
+
+    }
+    }
+
+
+
+
+
+
+
+
+}
+
+void Bibliothek::Buchzurückgeben()
+{
+    cout<<"1:Buch 2:Cd"<<endl;
+    char choice;
+    switch(choice){
+        case('1'):{
+        cout<<"Geben Sie bitte Ihre Nachname ein"<<endl;
+        string name;
+        cin>>name;
+        bool found=false;
+        for(const auto namee:Ausleiherbname){
+            if (namee==name){
+                found=true;
+
+            }
+            if(!found){
+                cout<<"Name nicht gefunden "<<endl;
+            }
+            else if(found){
+                cout<<"Name gefunden Sie können das Buch zurückgeben "<<endl;
+
+                    for(auto& it:mlisteb){
+                    it->setAusgeliehen(false);
+                    cout<<"Buch wurde zurückgegeben "<<endl;
+
+                }
+
+
+            }
+        }
+        break;
+
+
+        }
+        case('2'):{
+        cout<<"Geben Sie bitte Ihre Nachname ein"<<endl;
+        string name;
+        cin>>name;
+        bool found=false;
+        for(const auto namee:Ausleihercname){
+            if (namee==name){
+                found=true;
+
+            }
+            if(!found){
+                cout<<"Name nicht gefunden "<<endl;
+            }
+            else if(found){
+                cout<<"Name gefunden Sie können das Cd zurückgeben "<<endl;
+
+                    for(auto& it:mlistec){
+                    it->setAusgeliehen(false);
+                    cout<<"Cd wurde zurückgegeben "<<endl;
+
+                }
+
+
+            }
+        }
+        break;
+
+
+        }
+    }
+
+
+}
+
+void Bibliothek::medienanzeigen()
+{
+
+}
+
+
+
+
+
+void Bibliothek::Buchempfehlen()
+{
+    cout<<"1:Buch 2:Cd"<<endl;
+    char choice;
+    cin>>choice;
+    switch(choice){
+    case('1'):{
+        string name;
+        cout<<"Geben Sie bitte die Name des Autors "<<endl;
+        cin>>name;
+        bool found=false;
+        vector<string>Titels;// nicht vergessen
+        for(auto it:mlisteb){
+            if(it->getAutor()==name && it->getAusgeliehen()==false){
+
+                Titels.push_back(it->getTitel());
+
+                found=true;
+
+            }
+
+        }
+
+        }
+        int zufallindex=getRandom(0,Titel1.size()-1);
+        cout<<"Cd empfohlen:   "<<Titel1[zufallindex];
+        break;
+
+    }
+    }
+
+
+
+}
+
